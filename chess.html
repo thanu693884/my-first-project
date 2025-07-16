@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simple Chess Game</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      background-color: #f0d9b5;
+      margin: 20px;
+    }
+
+    #chessboard {
+      width: 480px;
+      height: 480px;
+      margin: 20px auto;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+      border: 2px solid #333;
+    }
+
+    .square {
+      width: 60px;
+      height: 60px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 40px;
+      cursor: pointer;
+      user-select: none; /* disable text selection */
+      transition: background-color 0.3s;
+    }
+
+    .light {
+      background-color: #eeeed2;
+    }
+
+    .dark {
+      background-color: #769656;
+    }
+
+    .piece {
+      cursor: grab;
+      user-select: none;
+    }
+
+    .piece:active {
+      cursor: grabbing;
+    }
+
+    .highlight {
+      outline: 3px solid #f39c12;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simple Chess Game</h1>
+  <div id="chessboard"></div>
+
+  <script>
+    // Unicode chess pieces codes for display
+    const piecesUnicode = {
+      'r': '♜',
+      'n': '♞',
+      'b': '♝',
+      'q': '♛',
+      'k': '♚',
+      'p': '♟︎',
+      'R': '♖',
+      'N': '♘',
+      'B': '♗',
+      'Q': '♕',
+      'K': '♔',
+      'P': '♙',
+    };
+
+    // Initial board setup
+    const initialBoard = [
+      ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+      ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+      ['.', '.', '.', '.', '.', '.', '.', '.'],
+      ['.', '.', '.', '.', '.', '.', '.', '.'],
+      ['.', '.', '.', '.', '.', '.', '.', '.'],
+      ['.', '.', '.', '.', '.', '.', '.', '.'],
+      ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+      ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+    ];
+
+    const chessboard = document.getElementById('chessboard');
+
+    let draggedPiece = null;
+
+    function createBoard() {
+      chessboard.innerHTML = ''; // clear
+
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const square = document.createElement('div');
+          square.classList.add('square');
+          // Light or dark square
+          if ((row + col) % 2 === 0) {
+            square.classList.add('light');
+          } else {
+            square.classList.add('dark');
+          }
+          square.id = `square-${row}-${col}`;
+
+          // Add piece if present
+          const piece = initialBoard[row][col];
+          if (piece !== '.') {
+            const pieceEl = document.createElement('div');
+            pieceEl.classList.add('piece');
+            pieceEl.textContent = piecesUnicode[piece];
+            pieceEl.draggable = true;
+            // drag events
+            pieceEl.addEventListener('dragstart', dragStart);
+            pieceEl.addEventListener('dragend', dragEnd);
+            square.appendChild(pieceEl);
+          }
+
+          // Drag & drop events on squares
+          square.addEventListener('dragover', dragOver);
+          square.addEventListener('drop', drop);
+          square.addEventListener('dragleave', dragLeave);
+
+          chessboard.appendChild(square);
+        }
+      }
+    }
+
+    function dragStart(e) {
+      draggedPiece = e.target;
+      setTimeout(() => draggedPiece.style.display = 'none', 0);
+    }
+
+    function dragEnd(e) {
+      draggedPiece.style.display = 'flex';
+      draggedPiece = null;
+      removeHighlightAll();
+    }
+
+    function dragOver(e) {
+      e.preventDefault();
+      if (e.target.classList.contains('square')) {
+        e.target.classList.add('highlight');
+      }
+    }
+
+    function dragLeave(e) {
+      if (e.target.classList.contains('square')) {
+        e.target.classList.remove('highlight');
+      }
+    }
+
+    function drop(e) {
+      e.preventDefault();
+      if (!draggedPiece) return;
+
+      // Get target square (if drop on piece, use its parent)
+      let targetSquare = e.target;
+      if (!targetSquare.classList.contains('square')) {
+        targetSquare = targetSquare.parentElement;
+      }
+
+      // Remove highlight on all squares
+      removeHighlightAll();
+
+      // Allow placing dragged piece replacing any existing piece
+      if (targetSquare) {
+        // Remove any piece in target square
+        while (targetSquare.firstChild) {
+          targetSquare.removeChild(targetSquare.firstChild);
+        }
+        targetSquare.appendChild(draggedPiece);
+      }
+    }
+
+    function removeHighlightAll() {
+      const squares = document.querySelectorAll('.square.highlight');
+      squares.forEach(sq => sq.classList.remove('highlight'));
+    }
+
+    createBoard();
+  </script>
+</body>
+</html>
