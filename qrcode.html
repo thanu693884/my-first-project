@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simple QR Code Creator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 400px;
+      margin: 50px auto;
+      text-align: center;
+      padding: 10px;
+    }
+    input[type="text"] {
+      width: 80%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 1rem;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    #qrcode {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simple QR Code Creator</h1>
+  <input type="text" id="text" placeholder="Enter text or URL" />
+  <br />
+  <button id="btn">Generate QR Code</button>
+  <div id="qrcode"></div>
+
+  <!-- QRCode.js library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs2@0.0.2/qrcode.min.js"></script>
+
+  <script>
+    const btn = document.getElementById('btn');
+    const qrCodeContainer = document.getElementById('qrcode');
+
+    btn.addEventListener('click', () => {
+      const text = document.getElementById('text').value.trim();
+      qrCodeContainer.innerHTML = ''; // Clear previous QR code
+
+      if (!text) {
+        alert('Please enter text or URL to generate QR code.');
+        return;
+      }
+
+      // Create new QRCode instance
+      new QRCode(qrCodeContainer, {
+        text: text,
+        width: 200,
+        height: 200,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    });
+  </script>
+</body>
+</html>
