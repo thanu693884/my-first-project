@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Custom Meme Generator</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .meme-controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      cursor: pointer;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .buttons-container {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      flex: 1;
+      padding: 10px 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    canvas {
+      border: 2px solid #333;
+      background-color: #e0e0e0;
+      max-width: 100%;
+      height: auto;
+      display: block; /* Remove extra space below canvas */
+    }
+  </style>
+</head>
+<body>
+  <h1>Custom Meme Generator</h1>
+
+  <div class="meme-controls">
+    <input type="file" id="imageInput" accept="image/*" />
+    <input type="text" id="topText" placeholder="Top Text" />
+    <input type="text" id="bottomText" placeholder="Bottom Text" />
+    <div class="buttons-container">
+      <button id="generateBtn">Generate Meme</button>
+      <button id="downloadBtn">Download Meme</button>
+    </div>
+  </div>
+
+  <canvas id="memeCanvas" width="600" height="400"></canvas>
+
+  <script>
+    const canvas = document.getElementById('memeCanvas');
+    const ctx = canvas.getContext('2d');
+    const imageInput = document.getElementById('imageInput');
+    const topTextInput = document.getElementById('topText');
+    const bottomTextInput = document.getElementById('bottomText');
+    const generateBtn = document.getElementById('generateBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    let uploadedImage = null;
+
+    // Load image onto canvas when file is selected [2]
+    imageInput.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target.result;
+          img.onload = () => {
+            uploadedImage = img;
+            drawMeme(); // Draw meme immediately after image loads
+          };
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Generate meme button click [2]
+    generateBtn.addEventListener('click', drawMeme);
+
+    // Download meme button click [2]
+    downloadBtn.addEventListener('click', () => {
+      if (!uploadedImage) {
+        alert('Please upload an image first!');
+        return;
+      }
+      const link = document.createElement('a');
+      link.download = 'custom-meme.png';
+      link.href = canvas.toDataURL(); // Get data URL from canvas
+      link.click();
+    });
+
+    // Function to draw image and text on canvas [2]
+    function drawMeme() {
+      if (!uploadedImage) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+        ctx.fillStyle = '#666';
+        ctx.textAlign = 'center';
+        ctx.font = '20px Arial';
+        ctx.fillText('Upload an image to start!', canvas.width / 2, canvas.height / 2);
+        return;
+      }
+
+      // Clear canvas and set dimensions to fit image while maintaining aspect ratio
+      const aspectRatio = uploadedImage.width / uploadedImage.height;
+      let drawWidth = canvas.width;
+      let drawHeight = canvas.width / aspectRatio;
+
+      if (drawHeight > canvas.height) {
+        drawHeight = canvas.height;
+        drawWidth = canvas.height * aspectRatio;
+      }
+
+      const offsetX = (canvas.width - drawWidth) / 2;
+      const offsetY = (canvas.height - drawHeight) / 2;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(uploadedImage, offsetX, offsetY, drawWidth, drawHeight);
+
+      // Get text values [2]
+      const topText = topTextInput.value.toUpperCase();
+      const bottomText = bottomTextInput.value.toUpperCase();
+
+      // Set text styles [2]
+      ctx.font = 'bold 40px Impact'; // Use Impact for classic meme font
+      ctx.fillStyle = 'white';
+      ctx.strokeStyle = 'black';
+      ctx.lineWidth = 3;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top'; // Align top text to top
+
+      // Draw top text [2]
+      if (topText) {
+        const x = canvas.width / 2;
+        const y = 20; // 20px from top
+        ctx.fillText(topText, x, y);
+        ctx.strokeText(topText, x, y);
+      }
+
+      ctx.textBaseline = 'bottom'; // Align bottom text to bottom
+      // Draw bottom text [2]
+      if (bottomText) {
+        const x = canvas.width / 2;
+        const y = canvas.height - 20; // 20px from bottom
+        ctx.fillText(bottomText, x, y);
+        ctx.strokeText(bottomText, x, y);
+      }
+    }
+
+    // Initial draw on load
+    drawMeme();
+  </script>
+</body>
+</html>
