@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Clock & Weather Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .dashboard-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 30px;
+        }
+
+        .clock-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .clock-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .time {
+            font-size: 4.5rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin: 10px 0;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            background: linear-gradient(to right, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .date {
+            font-size: 1.8rem;
+            margin: 15px 0;
+            color: #feb47b;
+        }
+
+        .day-night {
+            font-size: 1.2rem;
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .day {
+            background: linear-gradient(to right, #ffd700, #ff8c00);
+            color: #000;
+        }
+
+        .night {
+            background: linear-gradient(to right, #2c3e50, #4a6491);
+            color: #fff;
+        }
+
+        .weather-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+        }
+
+        .weather-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .location i {
+            font-size: 1.8rem;
+            margin-right: 15px;
+            color: #ff7e5f;
+        }
+
+        .location h2 {
+            font-size: 2.2rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .weather-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .weather-icon {
+            font-size: 6rem;
+            margin: 20px 0;
+            color: #feb47b;
+        }
+
+        .temperature {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .weather-condition {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #ff7e5f;
+        }
+
+        .weather-details {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .detail {
+            text-align: center;
+            padding: 15px;
+            min-width: 120px;
+        }
+
+        .detail i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #feb47b;
+        }
+
+        .detail .value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 5px 0;
+        }
+
+        .detail .label {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .dashboard-footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .dashboard-content {
+                flex-direction: column;
+            }
+            
+            .time {
+                font-size: 3.5rem;
+            }
+            
+            .temperature {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .time {
+                font-size: 2.8rem;
+            }
+            
+            .date {
+                font-size: 1.4rem;
+            }
+            
+            .temperature {
+                font-size: 2.2rem;
+            }
+            
+            .weather-condition {
+                font-size: 1.4rem;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>Digital Clock & Weather Dashboard</h1>
+            <p class="subtitle">A real-time digital clock combined with weather information. This dashboard automatically adjusts to day/night mode based on the current time.</p>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="clock-section">
+                <div class="clock-container">
+                    <div class="time" id="time">00:00:00</div>
+                    <div class="date" id="date">Monday, January 1, 2023</div>
+                    <div class="day-night" id="day-night">Day Mode</div>
+                </div>
+            </div>
+            
+            <div class="weather-section">
+                <div class="weather-card">
+                    <div class="location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h2>New York, USA</h2>
+                    </div>
+                    
+                    <div class="weather-info">
+                        <div class="weather-icon">
+                            <i class="fas fa-sun"></i>
+                        </div>
+                        <div class="temperature">24°C</div>
+                        <div class="weather-condition">Sunny</div>
+                        
+                        <div class="weather-details">
+                            <div class="detail">
+                                <i class="fas fa-wind"></i>
+                                <div class="value">12 km/h</div>
+                                <div class="label">Wind</div>
+                            </div>
+                            
+                            <div class="detail">
+                                <i class="fas fa-tint"></i>
+                                <div class="value">65%</div>
+                                <div class="label">Humidity</div>
+                            </div>
+                            
+                            <div class="detail">
+                                <i class="fas fa-compress-alt"></i>
+                                <div class="value">1013 hPa</div>
+                                <div class="label">Pressure</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-footer">
+            <p>Created with HTML, CSS & JavaScript | Updates in real-time</p>
+        </div>
+    </div>
+
+    <script>
+        // Update time function
+        function updateTime() {
+            const now = new Date();
+            
+            // Format time
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
+            
+            // Format date
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('date').textContent = now.toLocaleDateString('en-US', options);
+            
+            // Day/Night indicator
+            const dayNightElement = document.getElementById('day-night');
+            if (hours >= 6 && hours < 18) {
+                dayNightElement.textContent = 'Day Mode';
+                dayNightElement.className = 'day-night day';
+            } else {
+                dayNightElement.textContent = 'Night Mode';
+                dayNightElement.className = 'day-night night';
+            }
+        }
+        
+        // Initialize and update every second
+        updateTime();
+        setInterval(updateTime, 1000);
+        
+        // Simulated weather data - in a real app, this would come from an API
+        const weatherData = {
+            temperature: 24,
+            condition: 'Sunny',
+            humidity: 65,
+            wind: 12,
+            pressure: 1013
+        };
+        
+        // Update weather information
+        document.querySelector('.temperature').textContent = `${weatherData.temperature}°C`;
+        document.querySelector('.weather-condition').textContent = weatherData.condition;
+        document.querySelectorAll('.detail .value')[0].textContent = `${weatherData.wind} km/h`;
+        document.querySelectorAll('.detail .value')[1].textContent = `${weatherData.humidity}%`;
+        document.querySelectorAll('.detail .value')[2].textContent = `${weatherData.pressure} hPa`;
+        
+        // Update weather icon based on condition
+        function updateWeatherIcon() {
+            const iconElement = document.querySelector('.weather-icon i');
+            const condition = weatherData.condition.toLowerCase();
+            
+            if (condition.includes('sun') || condition.includes('clear')) {
+                iconElement.className = 'fas fa-sun';
+            } else if (condition.includes('cloud')) {
+                iconElement.className = 'fas fa-cloud';
+            } else if (condition.includes('rain') || condition.includes('shower')) {
+                iconElement.className = 'fas fa-cloud-rain';
+            } else if (condition.includes('storm')) {
+                iconElement.className = 'fas fa-bolt';
+            } else if (condition.includes('snow')) {
+                iconElement.className = 'fas fa-snowflake';
+            } else if (condition.includes('fog') || condition.includes('mist')) {
+                iconElement.className = 'fas fa-smog';
+            } else {
+                iconElement.className = 'fas fa-cloud-sun';
+            }
+        }
+        
+        updateWeatherIcon();
+    </script>
+</body>
+</html>
