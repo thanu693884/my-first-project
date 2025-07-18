@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix Clone</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #141414;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Header Styles */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
+            transition: background 0.3s ease;
+        }
+        
+        .navbar.scrolled {
+            background-color: #141414;
+        }
+        
+        .logo {
+            width: 120px;
+            fill: #e50914;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            color: #e5e5e5;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #b3b3b3;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .search-icon {
+            color: #fff;
+            cursor: pointer;
+        }
+        
+        .user-profile {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            background-color: #e50914;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 90vh;
+            position: relative;
+            background: linear-gradient(to top, #141414 0%, transparent 50%), 
+                        linear-gradient(to left, #141414 0%, transparent 20%),
+                        url('https://source.unsplash.com/random/1600x900/?movie') center/cover;
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+        }
+        
+        .hero-content {
+            max-width: 650px;
+            z-index: 10;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+        
+        .hero-details {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: #d2d2d2;
+        }
+        
+        .match-percent {
+            color: #46d369;
+        }
+        
+        .hero-description {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            margin-bottom: 30px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.7);
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 4px;
+            border: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .btn:hover {
+            opacity: 0.8;
+        }
+        
+        .play-btn {
+            background-color: white;
+            color: black;
+        }
+        
+        .info-btn {
+            background-color: rgba(109, 109, 110, 0.7);
+            color: white;
+        }
+        
+        /* Content Rows */
+        .content-section {
+            padding: 30px 50px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .content-row {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding: 10px 0;
+            scrollbar-width: none;
+        }
+        
+        .content-row::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .content-item {
+            min-width: 250px;
+            height: 140px;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .content-item:hover {
+            transform: scale(1.2);
+            z-index: 10;
+        }
+        
+        .content-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .item-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+            padding: 20px 10px 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .content-item:hover .item-info {
+            opacity: 1;
+        }
+        
+        .item-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .item-meta {
+            font-size: 12px;
+            color: #d2d2d2;
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Footer */
+        .footer {
+            padding: 50px;
+            color: #757575;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 24px;
+        }
+        
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 20px 0 30px;
+        }
+        
+        .footer-links a {
+            color: #757575;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .copyright {
+            font-size: 12px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .footer-links {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .content-item {
+                min-width: 200px;
+                height: 112px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 20px;
+            }
+            
+            .hero {
+                padding: 0 20px;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .content-section {
+                padding: 20px;
+            }
+            
+            .footer-links {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .footer-links {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+            }
+            
+            .content-item {
+                min-width: 150px;
+                height: 84px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <svg class="logo" viewBox="0 0 111 30">
+                <path d="M105.062 14.28L111 30c-1.75-.25-3.499-.563-5.28-.845l-3.345-8.686-3.437 7.969c-1.687-.282-3.344-.376-5.031-.595l6.031-13.75L94.468 0h5.063l3.062 7.874L105.875 0h5.124l-5.937 14.28zM90.47 0h-4.594v27.25c1.5.094 3.062.156 4.594.343V0zm-8.563 26.937c-4.187-.281-8.375-.53-12.656-.625V0h4.687v21.875c2.688.062 5.375.28 7.969.405v4.657zM64.25 10.657v4.687h-6.406V26H53.22V0h13.125v4.687h-8.5v5.97h6.406zm-18.906-5.97V26.25c-1.563 0-3.156 0-4.688.062V4.687h-4.844V0h14.406v4.687h-4.874zM30.75 15.593c-2.062 0-4.5 0-6.25.095v6.968c2.75-.188 5.5-.406 8.281-.5v4.5l-12.968 1.032V0H32.78v4.687H24.5V11c1.813 0 4.594-.094 6.25-.094v4.687zM4.78 12.968v16.375C3.094 29.531 1.593 29.75 0 30V0h4.469l6.093 17.032V0h4.688v28.062c-1.656.282-3.344.376-5.125.625L4.78 12.968z" fill="#e50914"></path>
+            </svg>
+        </div>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">TV Shows</a>
+            <a href="#">Movies</a>
+            <a href="#">New & Popular</a>
+            <a href="#">My List</a>
+        </div>
+        <div class="nav-right">
+            <div class="search-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="user-profile">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Stranger Things</h1>
+            <div class="hero-details">
+                <span class="match-percent">98% Match</span>
+                <span>2016</span>
+                <span>TV-14</span>
+                <span>4 Seasons</span>
+            </div>
+            <p class="hero-description">When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces and a strange little girl.</p>
+            <div class="hero-buttons">
+                <button class="btn play-btn">
+                    <i class="fas fa-play"></i> Play
+                </button>
+                <button class="btn info-btn">
+                    <i class="fas fa-info-circle"></i> More Info
+                </button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Content Sections -->
+    <section class="content-section">
+        <h2 class="section-title">Popular on Netflix</h2>
+        <div class="content-row" id="popular-row"></div>
+    </section>
+    
+    <section class="content-section">
+        <h2 class="section-title">Trending Now</h2>
+        <div class="content-row" id="trending-row"></div>
+    </section>
+    
+    <section class="content-section">
+        <h2 class="section-title">Top 10 in India Today</h2>
+        <div class="content-row" id="top10-row"></div>
+    </section>
+    
+    <section class="content-section">
+        <h2 class="section-title">New Releases</h2>
+        <div class="content-row" id="new-releases-row"></div>
+    </section>
+    
+    <section class="content-section">
+        <h2 class="section-title">Watch Again</h2>
+        <div class="content-row" id="watch-again-row"></div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+        <div class="footer-links">
+            <a href="#">Audio Description</a>
+            <a href="#">Help Center</a>
+            <a href="#">Gift Cards</a>
+            <a href="#">Media Center</a>
+            <a href="#">Investor Relations</a>
+            <a href="#">Jobs</a>
+            <a href="#">Terms of Use</a>
+            <a href="#">Privacy</a>
+            <a href="#">Legal Notices</a>
+            <a href="#">Cookie Preferences</a>
+            <a href="#">Corporate Information</a>
+            <a href="#">Contact Us</a>
+        </div>
+        <div class="copyright">
+            &copy; 1997-2023 Netflix, Inc.
+        </div>
+    </footer>
+    
+    <script>
+        // Movie data
+        const movies = [
+            { title: "The Witcher", year: 2019, match: 92, duration: "TV-MA", seasons: 3 },
+            { title: "Wednesday", year: 2022, match: 97, duration: "TV-14", seasons: 1 },
+            { title: "Money Heist", year: 2017, match: 94, duration: "TV-MA", seasons: 5 },
+            { title: "Breaking Bad", year: 2008, match: 99, duration: "TV-MA", seasons: 5 },
+            { title: "Peaky Blinders", year: 2013, match: 95, duration: "TV-MA", seasons: 6 },
+            { title: "Dark", year: 2017, match: 97, duration: "TV-MA", seasons: 3 },
+            { title: "The Queen's Gambit", year: 2020, match: 98, duration: "TV-MA", seasons: 1 },
+            { title: "Squid Game", year: 2021, match: 95, duration: "TV-MA", seasons: 1 },
+            { title: "The Crown", year: 2016, match: 96, duration: "TV-MA", seasons: 5 },
+            { title: "Narcos", year: 2015, match: 94, duration: "TV-MA", seasons: 3 },
+            { title: "Black Mirror", year: 2011, match: 97, duration: "TV-MA", seasons: 5 },
+            { title: "Ozark", year: 2017, match: 93, duration: "TV-MA", seasons: 4 },
+            { title: "House of Cards", year: 2013, match: 91, duration: "TV-MA", seasons: 6 },
+            { title: "Better Call Saul", year: 2015, match: 98, duration: "TV-MA", seasons: 6 },
+            { title: "The Mandalorian", year: 2019, match: 94, duration: "TV-14", seasons: 3 }
+        ];
+        
+        // Image URLs
+        const imageUrls = [
+            "https://source.unsplash.com/random/300x169/?fantasy",
+            "https://source.unsplash.com/random/300x169/?mystery",
+            "https://source.unsplash.com/random/300x169/?drama",
+            "https://source.unsplash.com/random/300x169/?action",
+            "https://source.unsplash.com/random/300x169/?sci-fi",
+            "https://source.unsplash.com/random/300x169/?horror",
+            "https://source.unsplash.com/random/300x169/?comedy",
+            "https://source.unsplash.com/random/300x169/?thriller",
+            "https://source.unsplash.com/random/300x169/?adventure",
+            "https://source.unsplash.com/random/300x169/?romance",
+            "https://source.unsplash.com/random/300x169/?crime",
+            "https://source.unsplash.com/random/300x169/?fantasy,castle",
+            "https://source.unsplash.com/random/300x169/?space",
+            "https://source.unsplash.com/random/300x169/?detective",
+            "https://source.unsplash.com/random/300x169/?superhero"
+        ];
+        
+        // Function to generate content items
+        function generateContentItems(containerId, count) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+            
+            for (let i = 0; i < count; i++) {
+                const movie = movies[i];
+                const imgUrl = imageUrls[i];
+                
+                const item = document.createElement("div");
+                item.className = "content-item";
+                
+                item.innerHTML = `
+                    <img src="${imgUrl}" alt="${movie.title}">
+                    <div class="item-info">
+                        <div class="item-title">${movie.title}</div>
+                        <div class="item-meta">
+                            <span>${movie.match}% Match</span>
+                            <span>${movie.year}</span>
+                            <span>${movie.duration}</span>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            }
+        }
+        
+        // Initialize content rows
+        window.addEventListener("DOMContentLoaded", () => {
+            generateContentItems("popular-row", 10);
+            generateContentItems("trending-row", 10);
+            generateContentItems("top10-row", 10);
+            generateContentItems("new-releases-row", 10);
+            generateContentItems("watch-again-row", 10);
+        });
+        
+        // Navbar scroll effect
+        window.addEventListener("scroll", () => {
+            const navbar = document.querySelector(".navbar");
+            if (window.scrollY > 100) {
+                navbar.classList.add("scrolled");
+            } else {
+                navbar.classList.remove("scrolled");
+            }
+        });
+        
+        // Hover effect for buttons
+        const buttons = document.querySelectorAll(".btn");
+        buttons.forEach(button => {
+            button.addEventListener("mouseenter", () => {
+                button.style.opacity = "0.9";
+            });
+            button.addEventListener("mouseleave", () => {
+                button.style.opacity = "1";
+            });
+        });
+    </script>
+</body>
+</html>
